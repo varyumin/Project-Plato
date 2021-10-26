@@ -88,7 +88,7 @@ var statCmd = &cobra.Command{
 	Use:   "stat",
 	Short: "Show statistics websites",
 	Long: `Takes the list of URLs. Show statistics websites.
-	Exaple:
+	Example:
 	Host                 Body size(byte)        Status Code
 	 ----                 ----                   ----
 	avito.ru             921550                 200
