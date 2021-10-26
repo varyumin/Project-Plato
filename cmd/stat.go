@@ -34,8 +34,8 @@ var (
 )
 
 type Answer struct {
-	URL string
-	BodySize int64
+	URL        string
+	BodySize   int64
 	StatusCode int
 }
 type Answers []Answer
@@ -52,14 +52,14 @@ func (a Answers) Swap(i, j int) {
 	a[i], a[j] = a[j], a[i]
 }
 
-func Request (u string) (a Answer){
+func Request(u string) (a Answer) {
 	h, err := url.Parse(u)
 	if err != nil {
 		log.Errorln(err)
 		return Answer{}
 	}
 
-	client := &http.Client {}
+	client := &http.Client{}
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
 		log.Errorln(err)
@@ -80,21 +80,21 @@ func Request (u string) (a Answer){
 	a.BodySize = b
 	a.URL = h.Host
 	a.StatusCode = res.StatusCode
-return a
+	return a
 }
-
-
 
 // statCmd represents the stat command
 var statCmd = &cobra.Command{
 	Use:   "stat",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Show statistics websites",
+	Long: `Takes the list of URLs. Show statistics websites.
+	Exaple:
+	Host                 Body size(byte)        Status Code
+	 ----                 ----                   ----
+	avito.ru             921550                 200
+	youtube.com          547235                 200
+	mail.ru              326427                 200
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var as Answers
 
@@ -113,20 +113,20 @@ to quickly create a Cobra application.`,
 				wg.Done()
 			}(url)
 		}
-	wg.Wait()
-	sort.Sort(as)
-	PrintResult(as)
+		wg.Wait()
+		sort.Sort(as)
+		PrintResult(as)
 	},
 }
 
-func PrintResult(a Answers)  {
+func PrintResult(a Answers) {
 	w := new(tabwriter.Writer)
 	w.Init(os.Stdout, 8, 8, 0, ' ', 0)
 	defer w.Flush()
 	fmt.Fprintf(w, "\n %s\t\t%s\t\t%s\t", "Host", "Body size(byte)", "Status Code")
 	fmt.Fprintf(w, "\n %s\t\t%s\t\t%s\t", "----", "----", "----")
 
-	for _, u := range a{
+	for _, u := range a {
 		fmt.Fprintf(w, "\n %s\t\t%d\t\t%d\t", u.URL, u.BodySize, u.StatusCode)
 	}
 	fmt.Fprint(w, "\n")
@@ -135,13 +135,4 @@ func PrintResult(a Answers)  {
 func init() {
 	rootCmd.AddCommand(statCmd)
 	statCmd.Flags().StringSliceVarP(&URLs, "urls", "u", nil, "Take a list of URLs ")
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// statCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// statCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
